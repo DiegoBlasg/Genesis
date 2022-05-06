@@ -31,6 +31,8 @@ contract NFT is ERC721, ERC721Enumerable, Ownable, ERC721URIStorage {
 
     mapping(uint256 => string) tokenName;
     mapping(uint256 => uint256) tokenBreeding;
+    mapping(uint256 => uint256) tokenNumber;
+    uint256 actualTokenNumber = 0;
 
     constructor() ERC721("MyToken", "MTK") {}
 
@@ -42,7 +44,15 @@ contract NFT is ERC721, ERC721Enumerable, Ownable, ERC721URIStorage {
         return tokenName[_tokenId];
     }
 
-    function random(uint256 number) public view returns (uint256) {
+    function getTokenBreeding(uint256 _tokenId) public view returns (uint256) {
+        return tokenBreeding[_tokenId];
+    }
+
+    function getTokenNumber(uint256 _tokenId) public view returns (uint256) {
+        return tokenNumber[_tokenId];
+    }
+
+    function random(uint256 number) internal view returns (uint256) {
         return
             uint256(
                 keccak256(
@@ -66,7 +76,7 @@ contract NFT is ERC721, ERC721Enumerable, Ownable, ERC721URIStorage {
     }
 
     function safeMint(address to) public payable {
-        require(msg.value >= MINT_PRICE, "Not enough ether sent.");
+        //require(msg.value >= MINT_PRICE, "Not enough ether sent.");
         uint256 tokenId = _tokenIdCounter.current();
         uint256 purity = random(11);
         uint256 background = random(6) + 1;
@@ -82,6 +92,9 @@ contract NFT is ERC721, ERC721Enumerable, Ownable, ERC721URIStorage {
             )
         );
         tokenName[tokenId] = name;
+        tokenBreeding[tokenId] = 6;
+        actualTokenNumber = actualTokenNumber + 1;
+        tokenNumber[tokenId] = actualTokenNumber;
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
     }
