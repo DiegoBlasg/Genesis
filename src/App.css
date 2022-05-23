@@ -1,14 +1,12 @@
-#nft {
-    border: 7px solid black;
+.ReactModal__Overlay {
+    opacity: 0;
+    transition: opacity 200ms ease-in-out;
 }
 
-#nft img {
-    width: 160px;
-    height: 188px;
+.ReactModal__Overlay--after-open {
+    opacity: 1;
 }
 
-#nft div {
-    background-color: red;
-    width: 160px;
-    height: 50px;
+.ReactModal__Overlay--before-close {
+    opacity: 0;
 }
