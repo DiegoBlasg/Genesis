@@ -3,135 +3,28 @@ import Web3 from 'web3'
 import NFT from '../../abis/NFT.json'
 import NFTImage from '../NFTImage';
 import { useDispatch, useSelector } from "react-redux";
+import useData from '../Hooks/useData';
 
 export default function Inventory() {
-    const state = useSelector(state => state.data)
-    const dispatch = useDispatch()
+    const { contract, totalSuply, wallet } = useSelector(state => state.data)
+    const NFTdata = useSelector(state => state.nfts)
+    const { loadBlockchainData } = useData()
 
-    const [walletAccount, setWalletAccount] = useState();
-    const [NFTcontract2, setNFTContract2] = useState();
-    const [numberOfNFT, setNumberOfNFT] = useState();
-    const [loanding, setloanding] = useState(false);
-    const [arrayOfIds2, setarrayOfIds2] = useState([]);
     const [sortByNumber, setsortByNumber] = useState(true);
 
-    const loadWeb3 = async () => {
-        if (window.ethereum) {
-            window.web3 = new Web3(window.ethereum)
-            await window.ethereum.enable()
-        } else if (window.web3) {
-            window.web3 = new Web3(window.web3.currentProvider)
-        } else {
-            window.alert('¡Considera usar Metamask!')
-        }
-
-    }
-
-    const loadBlockchainData = async () => {
-        const web3 = window.web3
-        // Cargar una cuenta
-        const accounts = await web3.eth.getAccounts()
-        setWalletAccount(accounts[0])
-        const networkId = await web3.eth.net.getId()
-        const networkData = NFT.networks[networkId]
-        if (networkData) {
-            const abi = NFT.abi
-            const address = networkData.address
-            const contract = new web3.eth.Contract(abi, address)
-            setNFTContract2(contract)
-            // Función 'totalSupply' del Smart Contract
-            const totalSupply = await contract.methods.balanceOf(accounts[0]).call()
-            setNumberOfNFT(totalSupply)
-
-        } else {
-            window.alert('¡Smart Contract no desplegado en la red!')
-        }
-    }
-    useEffect(() => {
-        console.log(state)
-    }, [state])
-
     const mint = async () => {
-        console.log('¡Nuevo NFT en procedimiento!')
-        //NFTcontract2.methods.safeMint(walletAccount).send({ from: walletAccount, gas: 400000 }, (err, hash) => loadBlockchainData())
-        NFTcontract2.methods.safeMint(walletAccount).estimateGas({
-            from: walletAccount,
+        contract.methods.safeMint(wallet).estimateGas({
+            from: wallet,
             //value: window.web3.utils.toWei("10", "ether")
         }, function (error, gasAmount) {
             console.log(gasAmount);
-            NFTcontract2.methods.safeMint(walletAccount).send({
-                from: walletAccount,
+            contract.methods.safeMint(wallet).send({
+                from: wallet,
                 //value: window.web3.utils.toWei("10", "ether"),
                 gas: parseInt(gasAmount + gasAmount * 0.3),
             }, (err, hash) => loadBlockchainData())
         });
     }
-
-    useEffect(() => {
-        loadWeb3()
-        loadBlockchainData()
-    }, [])
-
-    function sortArrayDescendingByNumber(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            for (let j = 0; j < i; j++) {
-                if (parseInt(array[j].number) < parseInt(array[j + 1].number)) {
-                    let value = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = value;
-                }
-            }
-        }
-        return array
-    }
-    function sortArrayDescendingByPurity(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            for (let j = 0; j < i; j++) {
-                if (parseInt(array[j].purity) < parseInt(array[j + 1].purity)) {
-                    let value = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = value;
-                }
-            }
-        }
-        return array
-    }
-    const a = async () => {
-        let arrayOfIds = [];
-        for (let i = parseInt(numberOfNFT) - 1; i >= 0; i--) {
-            const tokenId = await NFTcontract2.methods.tokenOfOwnerByIndex(walletAccount, i).call()
-            const NFTTimeToClaim = await NFTcontract2.methods.getTokenTimeToClaim(tokenId).call()
-            const date = new Date(NFTTimeToClaim * 1000);
-            const now = new Date()
-
-            if (date < now) {
-                const NFTNumber = await NFTcontract2.methods.getTokenNumber(tokenId).call()
-                const NFTPurity = await NFTcontract2.methods.getTokenPurity(tokenId).call()
-                arrayOfIds.push({ id: i, number: NFTNumber, purity: NFTPurity });
-            } else {
-                arrayOfIds.push({ id: i, number: 1000000000000000, purity: 200 });
-            }
-
-        }
-        setloanding(true)
-        if (sortByNumber) {
-            setarrayOfIds2(sortArrayDescendingByNumber(arrayOfIds))
-        } else {
-            setarrayOfIds2(sortArrayDescendingByPurity(arrayOfIds))
-        }
-        return arrayOfIds;
-    }
-    useEffect(() => {
-        if (numberOfNFT && NFTcontract2 && walletAccount) {
-            a()
-            //getNFTs(walletAccount, NFTcontract2)
-            //console.log(nfts);
-        }
-    }, [numberOfNFT, NFTcontract2, walletAccount])
-    useEffect(() => {
-        loadBlockchainData();
-    }, [sortByNumber])
-
     return (
         <div>
             <div className='flex justify-center py-5 pb-0 sm:ml-24'>
@@ -175,13 +68,11 @@ export default function Inventory() {
                 </div>
 
                 {
-                    loanding ?
-                        arrayOfIds2.map((_, i) => (
-                            <div key={_.id}>
-                                < NFTImage token={_.id} contract={NFTcontract2} account={walletAccount}></NFTImage>
-                            </div>
-                        ))
-                        : <></>
+                    NFTdata.map((_, i) => (
+                        <div key={_.id}>
+                            < NFTImage token={_.id} contract={contract} account={wallet}></NFTImage>
+                        </div>
+                    ))
                 }
 
             </div>

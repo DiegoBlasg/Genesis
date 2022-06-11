@@ -3,7 +3,7 @@ export const nftsReducer = (state = [], action) => {
         return state
     }
     if (action.type === '@nfts/init') {
-        return state
+        return action.payload
     }
     return state
 }

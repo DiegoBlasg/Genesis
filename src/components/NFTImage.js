@@ -125,7 +125,8 @@ export default function NFTImage({ contract, account, token, breed, changeBreed,
                         !NFTInprocces ?
                             <div className={`card ${selercted ? selercted.includes(token + 1) ? "bg-red-900" : "bg-zinc-900" : "bg-zinc-900"} w-72 rounded-xl m-4 p-6 space-y-4`}>
                                 <img className="w-full rounded-md transition hover:bg-cyan-300"
-                                    src={nftdata.img}
+                                    //src={nftdata.img}
+                                    src="./InProcess.png"
                                     alt="NFT" />
                                 <div id="description" className="space-y-4">
                                     <h2 className={`${breed0 ? 'text-red-700 hover:text-red-500' : 'text-white hover:text-cyan-300'} font-semibold text-center text-xl transition`}>
@@ -160,7 +161,8 @@ export default function NFTImage({ contract, account, token, breed, changeBreed,
                                         </div>
                                         :
                                         <img className="w-full rounded-md transition hover:bg-cyan-300"
-                                            src={nftdata.img}
+                                            //src={nftdata.img}
+                                            src="./InProcess.png"
                                             alt="NFT" />
 
                                 }
