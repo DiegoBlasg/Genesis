@@ -1,9 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Web3 from 'web3'
 import NFT from '../../abis/NFT.json'
 import NFTImage from '../NFTImage';
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Inventory() {
+    const state = useSelector(state => state.data)
+    const dispatch = useDispatch()
 
     const [walletAccount, setWalletAccount] = useState();
     const [NFTcontract2, setNFTContract2] = useState();
@@ -44,6 +47,9 @@ export default function Inventory() {
             window.alert('¡Smart Contract no desplegado en la red!')
         }
     }
+    useEffect(() => {
+        console.log(state)
+    }, [state])
 
     const mint = async () => {
         console.log('¡Nuevo NFT en procedimiento!')
@@ -118,6 +124,8 @@ export default function Inventory() {
     useEffect(() => {
         if (numberOfNFT && NFTcontract2 && walletAccount) {
             a()
+            //getNFTs(walletAccount, NFTcontract2)
+            //console.log(nfts);
         }
     }, [numberOfNFT, NFTcontract2, walletAccount])
     useEffect(() => {
@@ -175,7 +183,6 @@ export default function Inventory() {
                         ))
                         : <></>
                 }
-
 
             </div>
         </div >
