@@ -15,18 +15,7 @@ const useNFTs = () => {
         }
         return array
     }
-    function sortArrayDescendingByPurity(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            for (let j = 0; j < i; j++) {
-                if (parseInt(array[j].purity) < parseInt(array[j + 1].purity)) {
-                    let value = array[j];
-                    array[j] = array[j + 1];
-                    array[j + 1] = value;
-                }
-            }
-        }
-        return array
-    }
+
     const loadNFTData = async (contract, wallet, totalSuply) => {
         let arrayOfIds = [];
         for (let i = parseInt(totalSuply) - 1; i >= 0; i--) {
@@ -48,6 +37,11 @@ const useNFTs = () => {
         dispatch({
             type: '@nfts/init',
             payload: arrayOfIds
+        })
+
+        dispatch({
+            type: '@loanding/change',
+            payload: false
         })
     }
     return {

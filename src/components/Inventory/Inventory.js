@@ -1,16 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
-import Web3 from 'web3'
-import NFT from '../../abis/NFT.json'
 import NFTImage from '../NFTImage';
 import { useDispatch, useSelector } from "react-redux";
 import useData from '../Hooks/useData';
 
 export default function Inventory() {
-    const { contract, totalSuply, wallet } = useSelector(state => state.data)
-    const NFTdata = useSelector(state => state.nfts)
-    const { loadBlockchainData } = useData()
 
-    const [sortByNumber, setsortByNumber] = useState(true);
+    const { loadBlockchainData } = useData()
+    const dispatch = useDispatch()
+    const { contract, wallet } = useSelector(state => state.data)
+    const NFTdata = useSelector(state => state.nfts)
+    const filter = useSelector(state => state.filter)
 
     const mint = async () => {
         contract.methods.safeMint(wallet).estimateGas({
@@ -22,9 +20,32 @@ export default function Inventory() {
                 from: wallet,
                 //value: window.web3.utils.toWei("10", "ether"),
                 gas: parseInt(gasAmount + gasAmount * 0.3),
-            }, (err, hash) => loadBlockchainData())
+            }, (err, hash) => {
+                loadBlockchainData()
+                dispatch({
+                    type: '@loanding/change',
+                    payload: true
+                })
+            })
         });
     }
+    const sortNftDataByNumber = () => {
+        dispatch({
+            type: '@nfts/sort_number'
+        })
+        dispatch({
+            type: '@filter/number'
+        })
+    }
+    const sortNftDataByPurity = () => {
+        dispatch({
+            type: '@nfts/sort_purity'
+        })
+        dispatch({
+            type: '@filter/purity'
+        })
+    }
+
     return (
         <div>
             <div className='flex justify-center py-5 pb-0 sm:ml-24'>
@@ -34,13 +55,13 @@ export default function Inventory() {
             </div >
             <div className="flex flex-wrap sm:ml-24 justify-center">
 
-                <div className='flex justify-center pb-0 cursor-pointer' onClick={() => setsortByNumber(true)}>
-                    <div className={`card ${sortByNumber ? "bg-teal-600" : "bg-zinc-900"} rounded-xl m-4 p-6 px-12 space-y-4 flex justify-center`}>
+                <div className='flex justify-center pb-0 cursor-pointer' onClick={() => sortNftDataByNumber()}>
+                    <div className={`card ${filter === 'number' ? "bg-teal-600" : "bg-zinc-900"} rounded-xl m-4 p-6 px-12 space-y-4 flex justify-center`}>
                         <h1 className='text-zinc-100 font-bold text-xl'>NUMBER</h1>
                     </div>
                 </div >
-                <div className='flex justify-center pb-0 cursor-pointer' onClick={() => setsortByNumber(false)}>
-                    <div className={`card ${sortByNumber ? "bg-zinc-900" : "bg-teal-600"} rounded-xl m-4 p-6 px-12 space-y-4 flex justify-center`}>
+                <div className='flex justify-center pb-0 cursor-pointer' onClick={() => sortNftDataByPurity()}>
+                    <div className={`card ${filter === 'purity' ? "bg-teal-600" : "bg-zinc-900"} rounded-xl m-4 p-6 px-12 space-y-4 flex justify-center`}>
                         <h1 className='text-zinc-100 font-bold text-xl'>PURITY</h1>
                     </div>
                 </div >

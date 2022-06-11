@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Web3 from 'web3'
 import NFT from '../../abis/NFT.json'
 

@@ -3,12 +3,14 @@ import { useEffect } from 'react';
 import useData from './components/Hooks/useData';
 import { useSelector } from 'react-redux';
 import useNFTs from './components/Hooks/useNFTs';
+import './App.css'
+import LoandingPage from './LoandingPage';
 
 function App() {
   const { loadBlockchainData, loadWeb3 } = useData()
   const { loadNFTData } = useNFTs()
   const userData = useSelector(state => state.data)
-  const NFTs = useSelector(state => state.nfts)
+  const loanding = useSelector(state => state.loanding)
   useEffect(() => {
     loadWeb3()
     loadBlockchainData()
@@ -18,9 +20,26 @@ function App() {
       loadNFTData(userData.contract, userData.wallet, userData.totalSupply)
     }
   }, [userData])
+  useEffect(() => {
+    if (loanding) {
+      document.body.style = 'overflow: hidden;'
+    } else {
+      document.body.style = 'overflow: auto;'
+    }
+  }, [loanding])
 
   return (
-    <Routess />
+    <>
+      {
+        loanding ?
+          <LoandingPage />
+          :
+          <></>
+      }
+
+      <Routess />
+    </>
+
   );
 }
 
