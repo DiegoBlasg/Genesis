@@ -9,6 +9,7 @@ import RightCard from './RightCard';
 export default function Breeding() {
 
     const { loadBlockchainData } = useData()
+    const NFTs = useSelector(state => state.nfts)
     const { contract, wallet } = useSelector(state => state.data)
     const filter = useSelector(state => state.filter)
     const dispatch = useDispatch()
@@ -50,6 +51,18 @@ export default function Breeding() {
             type: '@filter/purity'
         })
     }
+    useEffect(() => {
+
+        for (let i = NFTs.length - 1; i > 0; i--) {
+            if (token1 && NFTs[i].tokenId == token1.tokenId) {
+                setToken1(NFTs[i])
+            }
+            if (token2 && NFTs[i].tokenId == token2.tokenId) {
+                setToken2(NFTs[i])
+            }
+        }
+
+    }, [NFTs])
 
     return (
         <div>

@@ -11,7 +11,6 @@ function App() {
   const { loadNFTData } = useNFTs()
   const userData = useSelector(state => state.data)
   const loanding = useSelector(state => state.loanding)
-  const nfts = useSelector(state => state.nfts)
   useEffect(() => {
     loadWeb3()
     loadBlockchainData()
@@ -21,24 +20,12 @@ function App() {
       loadNFTData(userData.contract, userData.wallet, userData.totalSupply)
     }
   }, [userData])
-  useEffect(() => {
-    console.log(nfts);
-  }, [nfts])
-  useEffect(() => {
-    if (loanding) {
-      document.body.style = 'overflow: hidden;'
-    } else {
-      document.body.style = 'overflow: auto;'
-    }
-  }, [loanding])
 
   return (
     <>
       {
-        loanding ?
-          <LoandingPage />
-          :
-          <></>
+        loanding &&
+        <LoandingPage />
       }
 
       <Routess />

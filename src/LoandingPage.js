@@ -1,9 +1,7 @@
 const LoandingPage = () => {
     return (
-        <>
-            <div className='absolute w-full h-full flex flex-col justify-center items-center'>
-                <div className='absolute w-full h-full bg-zinc-900 opacity-60 flex flex-col justify-center items-center'></div>
-            </div>
+        <div className="fixed w-full h-full">
+            <div className='absolute w-full h-full bg-zinc-900 opacity-60 flex flex-col justify-center items-center'></div>
             <div className='absolute w-full h-full flex flex-col justify-center items-center'>
 
                 <div className='absolute w-72 p-6'>
@@ -29,7 +27,7 @@ const LoandingPage = () => {
                 <h1 className='text-white text-2xl font-bold'>LOADING...</h1>
 
             </div>
-        </>
+        </div>
 
     )
 }
