@@ -159,10 +159,10 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
     }
 
     function getTokenNumber(uint256 _tokenId) public view returns (uint256) {
-        require(
+        /*require(
             tokenInfo[_tokenId].timeToClaim < block.timestamp,
             "NFT is not ready"
-        );
+        );*/
         return tokenInfo[_tokenId].number;
     }
 
@@ -196,8 +196,7 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return
-            "https://gateway.pinata.cloud/ipfs/Qmbnrpdrm1McB4o19LR9BR7ZdMkTfzoajRMgUzqKvYNdby/";
+        return "./NFTs/";
     }
 
     function withdraw() public onlyOwner {

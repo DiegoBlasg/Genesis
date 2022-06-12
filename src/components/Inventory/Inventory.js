@@ -20,13 +20,7 @@ export default function Inventory() {
                 from: wallet,
                 //value: window.web3.utils.toWei("10", "ether"),
                 gas: parseInt(gasAmount + gasAmount * 0.3),
-            }, (err, hash) => {
-                loadBlockchainData()
-                dispatch({
-                    type: '@loanding/change',
-                    payload: true
-                })
-            })
+            }, (err, hash) => { loadBlockchainData() })
         });
     }
     const sortNftDataByNumber = () => {
@@ -89,10 +83,8 @@ export default function Inventory() {
                 </div>
 
                 {
-                    NFTdata.map((_, i) => (
-                        <div key={_.id}>
-                            < NFTImage token={_.id} contract={contract} account={wallet}></NFTImage>
-                        </div>
+                    NFTdata.map((nft) => (
+                        < NFTImage key={nft.tokenId} nftdata={nft} />
                     ))
                 }
 

@@ -17,6 +17,10 @@ const useData = () => {
 
     }
     const loadBlockchainData = async () => {
+        dispatch({
+            type: '@loanding/change',
+            payload: true
+        })
         const web3 = window.web3
         // Cargar una cuenta
         const accounts = await web3.eth.getAccounts()

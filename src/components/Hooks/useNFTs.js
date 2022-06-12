@@ -6,7 +6,7 @@ const useNFTs = () => {
     function sortArrayDescendingByNumber(array) {
         for (let i = array.length - 1; i > 0; i--) {
             for (let j = 0; j < i; j++) {
-                if (parseInt(array[j].number) < parseInt(array[j + 1].number)) {
+                if (parseInt(array[j].tokenId) < parseInt(array[j + 1].tokenId)) {
                     let value = array[j];
                     array[j] = array[j + 1];
                     array[j + 1] = value;
@@ -17,26 +17,64 @@ const useNFTs = () => {
     }
 
     const loadNFTData = async (contract, wallet, totalSuply) => {
-        let arrayOfIds = [];
+        let nfts = [];
         for (let i = parseInt(totalSuply) - 1; i >= 0; i--) {
             const tokenId = await contract.methods.tokenOfOwnerByIndex(wallet, i).call()
-            const NFTTimeToClaim = await contract.methods.getTokenTimeToClaim(tokenId).call()
-            const date = new Date(NFTTimeToClaim * 1000);
-            const now = new Date()
-
-            if (date < now) {
-                const NFTNumber = await contract.methods.getTokenNumber(tokenId).call()
+            const NFTimage = await contract.methods.tokenURI(tokenId).call()
+            const NFTName = await contract.methods.getTokenName(tokenId).call()
+            const NFTNumber = await contract.methods.getTokenNumber(tokenId).call()
+            if (NFTName != "InProcess") {
+                const NFTBackground = await contract.methods.getTokenBackground(tokenId).call()
+                const NFTBreeding = await contract.methods.getTokenBreeding(tokenId).call()
+                const NFTColor = await contract.methods.getTokenColor(tokenId).call()
                 const NFTPurity = await contract.methods.getTokenPurity(tokenId).call()
-                arrayOfIds.push({ id: i, number: NFTNumber, purity: NFTPurity });
+                const nftdata = {
+                    inProcess: false,
+                    img: NFTimage,
+                    bg: NFTBackground,
+                    color: NFTColor,
+                    purity: NFTPurity,
+                    tokenId: NFTNumber,
+                    breeding: NFTBreeding
+                }
+                nfts.push(nftdata)
             } else {
-                arrayOfIds.push({ id: i, number: 1000000000000000, purity: 200 });
+                let nftdata = []
+                const minPurity = await contract.methods.getMinPurity(tokenId).call();
+                const tokenTimeToClaim = await contract.methods.getTokenTimeToClaim(tokenId).call();
+                const date = new Date(tokenTimeToClaim * 1000);
+                const now = new Date()
+                const secondsToClimb = Math.trunc(((date - now) / 1000));
+                if (secondsToClimb <= 0) {
+                    //const NFTPurity = await contract.methods.getTokenPurity(tokenId).call()
+                    //const NFTColor = await contract.methods.getTokenColor(tokenId).call()
+                    nftdata = {
+                        inProcess: true,
+                        img: NFTimage,
+                        //purity: NFTPurity,
+                        tokenId: NFTNumber,
+                        dateToClimb: date,
+                        //color: NFTColor,
+                        minPurity
+                    }
+                } else {
+                    nftdata = {
+                        tokenId: NFTNumber,
+                        inProcess: true,
+                        img: NFTimage,
+                        dateToClimb: date,
+                        minPurity,
+                    }
+                }
+                nfts.push(nftdata)
+
             }
 
         }
-        sortArrayDescendingByNumber(arrayOfIds)
+        sortArrayDescendingByNumber(nfts)
         dispatch({
             type: '@nfts/init',
-            payload: arrayOfIds
+            payload: nfts
         })
 
         dispatch({

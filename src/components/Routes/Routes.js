@@ -12,7 +12,7 @@ export default function Routess() {
             <Routes>
                 <Route path="/" element={<Inventory />} />
                 <Route path="/breeding" element={<Breeding />} />
-                <Route path="/trash" element={<NFTtrash />} />
+                <Route path="/trash" element={/*<NFTtrash />*/<Inventory />} />
             </Routes>
         </BrowserRouter>
     );
