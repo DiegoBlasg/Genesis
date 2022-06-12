@@ -72,13 +72,13 @@ export default function Inventory() {
                         </svg>
                     </div>
 
-                    <div className="flex items-center justify-center font-semibold text-2xl border-slate-500 pb-24">
-                        <span id="price" className="text-cyan-300 flex justify-between items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-1" viewBox="0 0 320 512" fill="#67E7F9">
-                                <path d="M311.9 260.8L160 353.6 8 260.8 160 0l151.9 260.8zM160 383.4L8 290.6 160 512l152-221.4-152 92.8z" />
-                            </svg>
-                            10 ETH
-                        </span>
+                    <div className="flex flex-col items-center justify-center font-semibold text-2xl border-slate-500 pb-15">
+                        <h1 className="text-cyan-300 flex justify-between items-center">
+                            NEW NFT
+                        </h1>
+                        <h1 id="price" className="text-cyan-300 flex justify-between items-center mt-3">
+                            1 - 10
+                        </h1>
                     </div>
                 </div>
 

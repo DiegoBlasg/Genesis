@@ -22,7 +22,7 @@ export default function NFTImage({ nftdata }) {
 
     const climedToken = async () => {
         let time = setTimeout(async () => {
-            const tokenId = await contract.methods.tokenOfOwnerByIndex(wallet, nftdata.tokenId - 1).call()
+            const tokenId = nftdata.tokenId - 1
             const NFTName = await contract.methods.getTokenName(tokenId).call()
             if (NFTName != "InProcess") {
                 clearTimeout(time)
@@ -32,7 +32,7 @@ export default function NFTImage({ nftdata }) {
     }
 
     const claimToken = async () => {
-        const tokenId = await contract.methods.tokenOfOwnerByIndex(wallet, nftdata.tokenId - 1).call()
+        const tokenId = nftdata.tokenId - 1
         contract.methods.claimNFT(tokenId).send({
             from: wallet,
             gas: 400000
@@ -98,8 +98,18 @@ export default function NFTImage({ nftdata }) {
                         {
                             sowInfo ?
                                 <div style={{ height: "282px" }} className="flex flex-col justify-center align-middle">
-                                    <h1 className='text-center text-3xl text-cyan-300 m-4'>{nftdata.color}</h1>
-                                    <h1 className='text-center text-3xl text-cyan-300 m-4'>{nftdata.purity}</h1>
+                                    <div className='mx-auto text-cyan-300'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="currentColor" className="bi bi-incognito" viewBox="0 0 16 16">
+                                            <path fillRule="evenodd" d="m4.736 1.968-.892 3.269-.014.058C2.113 5.568 1 6.006 1 6.5 1 7.328 4.134 8 8 8s7-.672 7-1.5c0-.494-1.113-.932-2.83-1.205a1.032 1.032 0 0 0-.014-.058l-.892-3.27c-.146-.533-.698-.849-1.239-.734C9.411 1.363 8.62 1.5 8 1.5c-.62 0-1.411-.136-2.025-.267-.541-.115-1.093.2-1.239.735Zm.015 3.867a.25.25 0 0 1 .274-.224c.9.092 1.91.143 2.975.143a29.58 29.58 0 0 0 2.975-.143.25.25 0 0 1 .05.498c-.918.093-1.944.145-3.025.145s-2.107-.052-3.025-.145a.25.25 0 0 1-.224-.274ZM3.5 10h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5Zm-1.5.5c0-.175.03-.344.085-.5H2a.5.5 0 0 1 0-1h3.5a1.5 1.5 0 0 1 1.488 1.312 3.5 3.5 0 0 1 2.024 0A1.5 1.5 0 0 1 10.5 9H14a.5.5 0 0 1 0 1h-.085c.055.156.085.325.085.5v1a2.5 2.5 0 0 1-5 0v-.14l-.21-.07a2.5 2.5 0 0 0-1.58 0l-.21.07v.14a2.5 2.5 0 0 1-5 0v-1Zm8.5-.5h2a.5.5 0 0 1 .5.5v1a1.5 1.5 0 0 1-3 0v-1a.5.5 0 0 1 .5-.5Z" />
+                                        </svg>
+                                    </div>
+
+                                    <h1 className='text-center text-3xl m-4 cursor-default' style={{ textShadow: "0 0 10px #67e8f9", color: "transparent" }}
+                                        onMouseOver={(e) => { e.target.style.color = "#67e8f9"; e.target.style.textShadow = "0 0 0" }}
+                                        onMouseOut={(e) => { e.target.style.color = "transparent"; e.target.style.textShadow = "0 0 10px #67e8f9" }}>Verde{nftdata.color}</h1>
+                                    <h1 className='text-center text-3xl m-4 cursor-default' style={{ textShadow: "0 0 10px #67e8f9", color: "transparent" }}
+                                        onMouseOver={(e) => { e.target.style.color = "#67e8f9"; e.target.style.textShadow = "0 0 0" }}
+                                        onMouseOut={(e) => { e.target.style.color = "transparent"; e.target.style.textShadow = "0 0 10px #67e8f9" }}>36{nftdata.purity}</h1>
                                 </div>
                                 :
                                 <img className="w-full rounded-md transition hover:bg-cyan-300"

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import NFTImage from '../NFTImage';
 import useData from '../Hooks/useData';
 import { useDispatch, useSelector } from 'react-redux';
 import LeftCard from './LeftCard';
@@ -21,8 +20,8 @@ export default function Breeding() {
 
     const breed = async () => {
         setloandingBreed(true)
-        const tokenId1 = await contract.methods.tokenOfOwnerByIndex(wallet, token1.tokenId - 1).call()
-        const tokenId2 = await contract.methods.tokenOfOwnerByIndex(wallet, token2.tokenId - 1).call()
+        const tokenId1 = token1.tokenId - 1
+        const tokenId2 = token2.tokenId - 1
         contract.methods.breed(tokenId1, tokenId2).estimateGas({
             from: wallet,
             //value: window.web3.utils.toWei("10", "ether")
@@ -91,7 +90,7 @@ export default function Breeding() {
 
                 <LeftCard token2={token2} token1={token1} setToken1={setToken1} />
 
-                <div className="p-11 hover:text-red-500 cursor-pointer" onClick={breed}>
+                <div className="p-11 hover:text-red-500">
                     {
                         loandingBreed ?
                             <div className='flex justify-center w-16 items-center text-cyan-300'>
@@ -111,7 +110,7 @@ export default function Breeding() {
                                 </svg>
                             </div>
                             :
-                            <div>
+                            <div className='cursor-pointer' onClick={breed}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" className="bi bi-heart-half" viewBox="0 0 16 16">
                                     <path d="M8 2.748v11.047c3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
                                 </svg>

@@ -74,7 +74,7 @@ const LeftCard = ({ token1, token2, setToken1 }) => {
                     <div onClick={() => { openModal() }} className="card bg-zinc-300 border-8 border-zinc-900 w-72 rounded-xl m-4 p-6 space-y-4 cursor-pointer">
                         <div className="flex items-center justify-center font-semibold text-2xl border-slate-500 py-6">
                             <span id="price" className="text-zinc-900 flex justify-between items-center font-bold">
-                                NFT 1
+                                NFT
                             </span>
                         </div>
                         <div className="flex items-center justify-center font-semibold text-2xl border-slate-500 py-6">

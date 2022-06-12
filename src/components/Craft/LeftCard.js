@@ -1,7 +1,7 @@
-import { useState } from "react";
+import NFTImage from "../NFTImage"
 import Modal from 'react-modal';
+import { useState } from "react";
 import { useSelector } from "react-redux";
-import NFTImage from "../NFTImage";
 
 const customStyles = {
     content: {
@@ -20,28 +20,30 @@ const customStyles = {
     }
 };
 Modal.setAppElement('#root');
-const RightCard = ({ token1, token2, setToken2 }) => {
+
+const LeftCard = ({ token1, token2, setToken1 }) => {
     const NFTdata = useSelector(state => state.nfts)
-    const [modalIsOpen2, setIsOpen2] = useState(false);
-    function openModal2() {
-        setIsOpen2(true);
-        setToken2(undefined)
+    const [modalIsOpen, setIsOpen] = useState(false);
+
+    function openModal() {
+        setIsOpen(true);
+        setToken1(undefined)
     }
 
-    function closeModal2() {
-        setIsOpen2(false);
+    function closeModal() {
+        setIsOpen(false);
     }
     return (
         <div>
             <Modal
-                isOpen={modalIsOpen2}
-                onRequestClose={closeModal2}
+                isOpen={modalIsOpen}
+                onRequestClose={closeModal}
                 style={customStyles}
                 contentLabel="Example Modal"
                 closeTimeoutMS={100}
             >
                 <div className='flex justify-between sm:justify-center'>
-                    <div className='text-zinc-100 cursor-pointer absolute top-5 right-10  py-5' onClick={closeModal2}>
+                    <div className='text-zinc-100 cursor-pointer absolute top-5 right-10 spy-5' onClick={closeModal}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" ame="bi bi-x-lg" viewBox="0 0 16 16">
                             <path fillRule="evenodd" d="M13.854 2.146a.5.5 0 0 1 0 .708l-11 11a.5.5 0 0 1-.708-.708l11-11a.5.5 0 0 1 .708 0Z" />
                             <path fillRule="evenodd" d="M2.146 2.146a.5.5 0 0 0 0 .708l11 11a.5.5 0 0 0 .708-.708l-11-11a.5.5 0 0 0-.708 0Z" />
@@ -55,8 +57,8 @@ const RightCard = ({ token1, token2, setToken2 }) => {
                 <div className="flex overflow-auto">
                     {
                         NFTdata.map((_) => (
-                            token1 != _ && !_.inProcess &&
-                            <div key={_.tokenId} onClick={() => { setToken2(_); closeModal2(); }} >
+                            token2 != _ && !_.inProcess &&
+                            <div key={_.tokenId} onClick={() => { setToken1(_); closeModal(); }} >
                                 < NFTImage nftdata={_} />
                             </div>
                         ))
@@ -64,15 +66,15 @@ const RightCard = ({ token1, token2, setToken2 }) => {
                 </div >
             </Modal>
             {
-                token2 != undefined ?
-                    <div onClick={() => { openModal2() }}>
-                        < NFTImage nftdata={token2} />
+                token1 != undefined ?
+                    <div onClick={() => { openModal() }}>
+                        < NFTImage nftdata={token1} />
                     </div>
                     :
-                    <div onClick={() => { openModal2() }} className="card bg-zinc-300 border-8 border-zinc-900 w-72 rounded-xl m-4 p-6 space-y-4 cursor-pointer">
+                    <div onClick={() => { openModal() }} className="card bg-zinc-300 border-8 border-zinc-900 w-72 rounded-xl m-4 p-6 space-y-4 cursor-pointer">
                         <div className="flex items-center justify-center font-semibold text-2xl border-slate-500 py-6">
                             <span id="price" className="text-zinc-900 flex justify-between items-center font-bold">
-                                NFT
+                                MAIN NFT
                             </span>
                         </div>
                         <div className="flex items-center justify-center font-semibold text-2xl border-slate-500 py-6">
@@ -85,4 +87,4 @@ const RightCard = ({ token1, token2, setToken2 }) => {
         </div>
     )
 }
-export default RightCard
+export default LeftCard
