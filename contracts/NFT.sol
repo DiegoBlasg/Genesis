@@ -12,7 +12,7 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
 
     Counters.Counter private _tokenIdCounter;
 
-    uint256 MINT_PRICE = 10 ether;
+    uint256 TX_PRICE = 0.2 ether;
     string[4] colors = ["azul", "verde", "rosa", "marron"];
     string[10] numbers = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
     string[6] backgroundStrings = ["1", "2", "3", "4", "5", "6"];
@@ -26,6 +26,9 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
         uint256 background;
         uint256 timeToClaim;
     }
+
+    mapping(address => uint256) winningAddresses;
+    uint256 winners = 0;
 
     mapping(uint256 => token) tokenInfo;
     mapping(uint256 => uint256) tokenMinPurity;
@@ -46,10 +49,10 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
         return rodom + _numberMin;
     }
 
-    function safeMint(address to) public {
-        //require(msg.value >= MINT_PRICE, "Not enough ether sent.");
+    function safeMint(address to) public payable {
+        require(msg.value >= TX_PRICE, "Not enough ether sent.");
         uint256 tokenId = _tokenIdCounter.current();
-        uint256 purity = random(1, 11);
+        uint256 purity = random(1, 10);
         uint256 background = random(0, 6);
         string memory color = colors[random(0, 4)];
         string memory name = string(
@@ -75,7 +78,8 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
         _safeMint(to, tokenId);
     }
 
-    function breed(uint256 _idToken1, uint256 _idToken2) public {
+    function breed(uint256 _idToken1, uint256 _idToken2) public payable {
+        require(msg.value >= TX_PRICE, "Not enough ether sent.");
         require(_idToken1 != _idToken2, "NFTs are the same");
         require(ownerOf(_idToken1) == msg.sender, "The token is not yours");
         require(ownerOf(_idToken2) == msg.sender, "The token is not yours");
@@ -116,19 +120,24 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
         uint256 purityToken1,
         uint256 purityToken2
     ) internal {
-        //require(msg.value >= MINT_PRICE, "Not enough ether sent.");
         uint256 randomMin = (purityToken1 + purityToken2) / 2;
+        uint256 purity = random(randomMin, randomMin + 10);
         uint256 tokenId = _tokenIdCounter.current();
-        uint256 purity = random(randomMin, randomMin + 11);
-        uint256 background = random(0, 6);
-        string memory color = colors[random(0, 4)];
+        uint256 timeToClaim = block.timestamp + 12 hours;
         string memory name = "InProcess";
-        uint256 timeToClaim = block.timestamp + 2 minutes;
-
+        uint256 background = random(0, 6);
+        string memory color;
+        if (purity >= 100) {
+            purity = 100;
+            color = "dorado";
+            tokenInfo[tokenId].breeding = 0;
+        } else {
+            color = colors[random(0, 4)];
+            tokenInfo[tokenId].breeding = 4;
+        }
         tokenMinPurity[tokenId] = randomMin;
         tokenInfo[tokenId].timeToClaim = timeToClaim;
         tokenInfo[tokenId].name = name;
-        tokenInfo[tokenId].breeding = 4;
         tokenInfo[tokenId].purity = purity;
         tokenInfo[tokenId].color = color;
         tokenInfo[tokenId].background = background;
@@ -138,30 +147,40 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
         _safeMint(to, tokenId);
     }
 
-    function claimNFT(uint256 _tokenId) public {
+    function claimNFT(uint256 _tokenId) public payable {
+        require(msg.value >= TX_PRICE, "Not enough ether sent.");
         require(
             (keccak256(abi.encodePacked(tokenInfo[_tokenId].name))) ==
                 (keccak256(abi.encodePacked("InProcess"))),
             "the NFT is already claimed"
         );
-        tokenInfo[_tokenId].name = string(
-            abi.encodePacked(
-                "f",
-                backgroundStrings[tokenInfo[_tokenId].background],
-                "per",
-                tokenInfo[_tokenId].color,
-                "pur",
-                numbers[tokenInfo[_tokenId].purity / 100],
-                numbers[tokenInfo[_tokenId].purity / 10],
-                numbers[
-                    tokenInfo[_tokenId].purity -
-                        ((uint256(tokenInfo[_tokenId].purity / 10)) * 10)
-                ]
-            )
-        );
+        if (tokenInfo[_tokenId].purity == 100) {
+            tokenInfo[_tokenId].name = "pur100";
+            if (winningAddresses[msg.sender] == 0) {
+                winners = winners + 1;
+                winningAddresses[msg.sender] = winners;
+            }
+        } else {
+            tokenInfo[_tokenId].name = string(
+                abi.encodePacked(
+                    "f",
+                    backgroundStrings[tokenInfo[_tokenId].background],
+                    "per",
+                    tokenInfo[_tokenId].color,
+                    "pur",
+                    numbers[tokenInfo[_tokenId].purity / 100],
+                    numbers[tokenInfo[_tokenId].purity / 10],
+                    numbers[
+                        tokenInfo[_tokenId].purity -
+                            ((uint256(tokenInfo[_tokenId].purity / 10)) * 10)
+                    ]
+                )
+            );
+        }
     }
 
-    function craft(uint256 _idToken1, uint256 _idToken2) public {
+    function craft(uint256 _idToken1, uint256 _idToken2) public payable {
+        require(msg.value >= TX_PRICE, "Not enough ether sent.");
         require(_idToken1 != _idToken2, "NFTs are the same");
         require(ownerOf(_idToken1) == msg.sender, "The token is not yours");
         require(ownerOf(_idToken2) == msg.sender, "The token is not yours");
@@ -266,6 +285,9 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
     }
 
     //Getters
+    function getWinnersPosition() public view returns (uint256) {
+        return winningAddresses[msg.sender];
+    }
 
     function getTokenTimeToClaim(uint256 _tokenId)
         public
@@ -308,10 +330,10 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
         view
         returns (string memory)
     {
-        require(
+        /*require(
             tokenInfo[_tokenId].timeToClaim < block.timestamp,
             "NFT is not ready"
-        );
+        );*/
         return tokenInfo[_tokenId].color;
     }
 
@@ -325,10 +347,10 @@ contract NFT is ERC721, Ownable, ERC721URIStorage, ERC721Enumerable {
     }
 
     function getTokenPurity(uint256 _tokenId) public view returns (uint256) {
-        require(
+        /*require(
             tokenInfo[_tokenId].timeToClaim < block.timestamp,
             "NFT is not ready"
-        );
+        );*/
         return tokenInfo[_tokenId].purity;
     }
 }

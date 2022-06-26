@@ -55,7 +55,7 @@ const RightCard = ({ token1, token2, setToken2 }) => {
                 <div className="flex overflow-auto">
                     {
                         NFTdata.map((_) => (
-                            token1 != _ && !_.inProcess &&
+                            token1 != _ && !_.inProcess && _.purity != 100 &&
                             <div key={_.tokenId} onClick={() => { setToken2(_); closeModal2(); }} >
                                 < NFTImage nftdata={_} />
                             </div>

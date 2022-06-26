@@ -26,6 +26,11 @@ export const nftsReducer = (state = [], action) => {
         case '@nfts/init':
             return action.payload
 
+        case '@nfts/update':
+            action.payload.map(nft => {
+                state.push(nft)
+            })
+            return state
         default:
             return state
     }

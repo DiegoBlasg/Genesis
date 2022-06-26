@@ -19,17 +19,22 @@ export default function Breeding() {
     const [loandingBreed, setloandingBreed] = useState(false);
 
     const breed = async () => {
+        if (token1.breeding <= 0 && token2.breeding <= 0) {
+            setToken1(undefined)
+            setToken2(undefined)
+            return;
+        }
         setloandingBreed(true)
         const tokenId1 = token1.tokenId - 1
         const tokenId2 = token2.tokenId - 1
         contract.methods.breed(tokenId1, tokenId2).estimateGas({
             from: wallet,
-            //value: window.web3.utils.toWei("10", "ether")
+            value: window.web3.utils.toWei("0.2", "ether")
         }, function (error, gasAmount) {
             console.log(gasAmount);
             contract.methods.breed(tokenId1, tokenId2).send({
                 from: wallet,
-                //value: window.web3.utils.toWei("10", "ether"),
+                value: window.web3.utils.toWei("0.2", "ether"),
                 gas: parseInt(gasAmount + gasAmount * 0.4),
             }, (err, hash) => { loadBlockchainData(); setloandingBreed(false) })
         });
@@ -65,9 +70,7 @@ export default function Breeding() {
 
     return (
         <div>
-
-
-            <div className='flex justify-center py-5 pb-0 sm:ml-24'>
+            <div className='flex justify-center py-5 pb-0 sm:ml-24 pt-20 sm:pt-5'>
                 <div className="card bg-zinc-900 w-80 rounded-xl m-4 p-6 space-y-4 flex justify-center">
                     <h1 className='text-zinc-100 font-bold text-3xl'>BREEDING</h1>
                 </div>

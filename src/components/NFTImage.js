@@ -33,10 +33,16 @@ export default function NFTImage({ nftdata }) {
 
     const claimToken = async () => {
         const tokenId = nftdata.tokenId - 1
-        contract.methods.claimNFT(tokenId).send({
+        contract.methods.claimNFT(tokenId).estimateGas({
             from: wallet,
-            gas: 400000
-        }, (err, hash) => { climedToken() })
+            value: window.web3.utils.toWei("0.2", "ether")
+        }, function (error, gasAmount) {
+            contract.methods.claimNFT(tokenId).send({
+                from: wallet,
+                value: window.web3.utils.toWei("0.2", "ether"),
+                gas: gasAmount,
+            }, (err, hash) => { climedToken() })
+        });
     }
 
     useEffect(() => {
@@ -47,6 +53,7 @@ export default function NFTImage({ nftdata }) {
             }
             if (seconds <= 0) {
                 clearTimeout(time)
+                if (!nftdata.purity) loadBlockchainData()
             }
 
         }, 1000);
@@ -66,31 +73,45 @@ export default function NFTImage({ nftdata }) {
         <div>
             {
                 !nftdata.inProcess ?
-                    <div className="card bg-zinc-900 w-72 rounded-xl m-4 p-6 space-y-4">
+                    <div className="card bg-zinc-900 w-72 rounded-xl my-4 sm:mx-4 p-6 space-y-4">
                         <img className="w-full rounded-md transition hover:bg-cyan-300"
                             src={nftdata.img}
                             alt="NFT" />
-                        <div id="description" className="space-y-4">
-                            <h2 className={`${nftdata.breeding == 0 ? 'text-red-700 hover:text-red-500' : 'text-white hover:text-cyan-300'} font-semibold text-center text-xl transition`}>
-                                Criature #{nftdata.tokenId}
-                            </h2>
-                            <div className="flex items-center justify-between font-semibold text-sm border-slate-500">
-                                <span id="price" className="text-cyan-300 flex justify-between items-center">
-                                    <span className='text-cyan-600'>Breeding&nbsp;</span> {nftdata.breeding}/4
-                                </span>
-                                <span id="price" className="text-cyan-300 flex justify-between items-center">
-                                    <span className='text-cyan-600'>Purity&nbsp;</span> {nftdata.purity}
-                                </span>
-                            </div>
-                            <div className="flex items-center justify-between font-semibold text-sm border-slate-500">
-                                <span id="price" className="text-cyan-300 flex justify-between items-center">
-                                    <span className='text-cyan-600'>Color&nbsp;</span> {nftdata.color}
-                                </span>
-                                <span id="price" className="text-cyan-300 flex justify-between items-center">
-                                    <span className='text-cyan-600'>Background&nbsp;</span> {nftdata.bg}
-                                </span>
-                            </div>
-                        </div>
+                        {
+                            nftdata.purity == 100 ?
+                                <div className="space-y-4">
+                                    <h2 className='text-cyan-300 font-semibold text-center text-xl transition'>
+                                        Criature #{nftdata.tokenId}
+                                    </h2>
+                                    <div className="flex items-center justify-center py-4 font-semibold text-sm border-slate-500">
+                                        <h2 className='text-cyan-600 font-semibold text-center text-xl transition'>
+                                            Top #{nftdata.winnersPosition}
+                                        </h2>
+                                    </div>
+                                </div>
+                                :
+                                <div className="space-y-4">
+                                    <h2 className={`${nftdata.breeding == 0 ? 'text-red-700 hover:text-red-500' : 'text-white hover:text-cyan-300'} font-semibold text-center text-xl transition`}>
+                                        Criature #{nftdata.tokenId}
+                                    </h2>
+                                    <div className="flex items-center justify-between font-semibold text-sm border-slate-500">
+                                        <span id="price" className="text-cyan-300 flex justify-between items-center">
+                                            <span className='text-cyan-600'>Breeding&nbsp;</span> {nftdata.breeding}/4
+                                        </span>
+                                        <span id="price" className="text-cyan-300 flex justify-between items-center">
+                                            <span className='text-cyan-600'>Purity&nbsp;</span> {nftdata.purity}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center justify-between font-semibold text-sm border-slate-500">
+                                        <span id="price" className="text-cyan-300 flex justify-between items-center">
+                                            <span className='text-cyan-600'>Color&nbsp;</span> {nftdata.color}
+                                        </span>
+                                        <span id="price" className="text-cyan-300 flex justify-between items-center">
+                                            <span className='text-cyan-600'>Background&nbsp;</span> {nftdata.bg}
+                                        </span>
+                                    </div>
+                                </div>
+                        }
 
                     </div>
                     :
@@ -106,10 +127,10 @@ export default function NFTImage({ nftdata }) {
 
                                     <h1 className='text-center text-3xl m-4 cursor-default' style={{ textShadow: "0 0 10px #67e8f9", color: "transparent" }}
                                         onMouseOver={(e) => { e.target.style.color = "#67e8f9"; e.target.style.textShadow = "0 0 0" }}
-                                        onMouseOut={(e) => { e.target.style.color = "transparent"; e.target.style.textShadow = "0 0 10px #67e8f9" }}>Verde{nftdata.color}</h1>
+                                        onMouseOut={(e) => { e.target.style.color = "transparent"; e.target.style.textShadow = "0 0 10px #67e8f9" }}>{nftdata.color}</h1>
                                     <h1 className='text-center text-3xl m-4 cursor-default' style={{ textShadow: "0 0 10px #67e8f9", color: "transparent" }}
                                         onMouseOver={(e) => { e.target.style.color = "#67e8f9"; e.target.style.textShadow = "0 0 0" }}
-                                        onMouseOut={(e) => { e.target.style.color = "transparent"; e.target.style.textShadow = "0 0 10px #67e8f9" }}>36{nftdata.purity}</h1>
+                                        onMouseOut={(e) => { e.target.style.color = "transparent"; e.target.style.textShadow = "0 0 10px #67e8f9" }}>{nftdata.purity}</h1>
                                 </div>
                                 :
                                 <img className="w-full rounded-md transition hover:bg-cyan-300"
