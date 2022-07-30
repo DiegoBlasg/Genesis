@@ -32,7 +32,6 @@ const useData = () => {
             const contract = new web3.eth.Contract(abi, address)
             // Función 'totalSupply' del Smart Contract
             const totalSupply = await contract.methods.balanceOf(accounts[0]).call()
-
             dispatch({
                 type: '@data/init',
                 payload: {
@@ -46,8 +45,18 @@ const useData = () => {
             window.alert('¡Smart Contract no desplegado en la red!')
         }
     }
+    const resetData = () => {
+        dispatch({
+            type: '@data/reset',
+            payload: true
+        })
+        dispatch({
+            type: '@nfts/reset',
+            payload: true
+        })
+    }
     return {
-        loadWeb3, loadBlockchainData
+        loadWeb3, loadBlockchainData, resetData
     }
 }
 export default useData

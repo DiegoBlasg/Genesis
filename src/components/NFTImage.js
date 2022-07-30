@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import useData from './Hooks/useData'
+import useNFTs from './Hooks/useNFTs'
 
 export default function NFTImage({ nftdata }) {
     const { loadBlockchainData } = useData()
     const { contract, wallet } = useSelector(state => state.data)
+    const { modifyNFT } = useNFTs()
 
     const [seconds, setSeconds] = useState()
     const [time, setTime] = useState()
     const [sowInfo, setSowInfo] = useState(false)
+    const dispatch = useDispatch()
 
     const secondsToString = (seconds) => {
         var hour = Math.floor(seconds / 3600);
@@ -26,7 +29,7 @@ export default function NFTImage({ nftdata }) {
             const NFTName = await contract.methods.getTokenName(tokenId).call()
             if (NFTName != "InProcess") {
                 clearTimeout(time)
-                loadBlockchainData()
+                modifyNFT(tokenId, contract)
             }
         }, 1000);
     }
@@ -41,7 +44,7 @@ export default function NFTImage({ nftdata }) {
                 from: wallet,
                 value: window.web3.utils.toWei("0.2", "ether"),
                 gas: gasAmount,
-            }, (err, hash) => { climedToken() })
+            }).then(climedToken)
         });
     }
 
@@ -53,7 +56,7 @@ export default function NFTImage({ nftdata }) {
             }
             if (seconds <= 0) {
                 clearTimeout(time)
-                if (!nftdata.purity) loadBlockchainData()
+                if (!nftdata.purity) modifyNFT(nftdata.tokenId - 1, contract, true)
             }
 
         }, 1000);

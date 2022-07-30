@@ -7,7 +7,7 @@ import './App.css'
 import LoandingPage from './LoandingPage';
 
 function App() {
-  const { loadBlockchainData, loadWeb3 } = useData()
+  const { loadBlockchainData, loadWeb3, resetData } = useData()
   const { loadNFTData } = useNFTs()
   const userData = useSelector(state => state.data)
   const loanding = useSelector(state => state.loanding)
@@ -20,7 +20,11 @@ function App() {
       loadNFTData(userData.contract, userData.wallet, userData.totalSupply)
     }
   }, [userData])
-
+  window.ethereum.on('accountsChanged', () => {
+    resetData()
+    loadWeb3()
+    loadBlockchainData()
+  });
   return (
     <>
       {

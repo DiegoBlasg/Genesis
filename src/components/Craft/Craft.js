@@ -4,6 +4,8 @@ import Modal from 'react-modal';
 import { useDispatch, useSelector } from 'react-redux';
 import LeftCard from './LeftCard';
 import RightCard from './RightCard';
+import useNFTs from '../Hooks/useNFTs';
+import '../patterns.css'
 
 
 const customStyles = {
@@ -25,7 +27,7 @@ const customStyles = {
 Modal.setAppElement('#root');
 const Craft = () => {
 
-    const { loadBlockchainData } = useData()
+    const { modifyNFT } = useNFTs()
     const NFTs = useSelector(state => state.nfts)
     const { contract, wallet } = useSelector(state => state.data)
     const filter = useSelector(state => state.filter)
@@ -49,20 +51,20 @@ const Craft = () => {
         setloandingCraft(true)
         const tokenId1 = token1.tokenId - 1
         const tokenId2 = token2.tokenId - 1
-        console.log(tokenId1);
-        console.log(tokenId2);
         contract.methods.craft(tokenId1, tokenId2).estimateGas({
             from: wallet,
             value: window.web3.utils.toWei("0.2", "ether")
         }, function (err, gasAmount) {
-            console.log(gasAmount);
             contract.methods.craft(tokenId1, tokenId2).send({
                 from: wallet,
                 value: window.web3.utils.toWei("0.2", "ether"),
                 gas: parseInt(gasAmount + gasAmount * 0.4),
-            }, (err, hash) => {
-                loadBlockchainData();
-                setloandingCraft(false);
+            }, (err, hash) => { setloandingCraft(false); }).then(() => {
+                modifyNFT(tokenId1, contract);
+                dispatch({
+                    type: '@nfts/remove',
+                    payload: token2.tokenId
+                })
                 setToken1(undefined);
                 setToken2(undefined);
                 closeModal()
@@ -100,6 +102,7 @@ const Craft = () => {
 
     return (
         <div>
+            <div className='pattern-blue fixed w-full h-full -z-10'></div>
             <Modal
                 isOpen={modalIsOpen}
                 onRequestClose={closeModal}

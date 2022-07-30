@@ -1,36 +1,29 @@
 export const nftsReducer = (state = [], action) => {
     switch (action.type) {
         case '@nfts/sort_purity':
-            for (let i = state.length - 1; i > 0; i--) {
-                for (let j = 0; j < i; j++) {
-                    if (parseInt(state[j].purity) < parseInt(state[j + 1].purity)) {
-                        let value = state[j];
-                        state[j] = state[j + 1];
-                        state[j + 1] = value;
-                    }
-                }
-            }
-            return state
+            return state.sort((a, b) => b.purity - a.purity)
+
         case '@nfts/sort_number':
-            for (let i = state.length - 1; i > 0; i--) {
-                for (let j = 0; j < i; j++) {
-                    if (parseInt(state[j].tokenId) < parseInt(state[j + 1].tokenId)) {
-                        let value = state[j];
-                        state[j] = state[j + 1];
-                        state[j + 1] = value;
-                    }
-                }
-            }
-            return state
+            return state.sort((a, b) => b.tokenId - a.tokenId)
+
+        case '@nfts/add':
+            return [action.payload, ...state]
+
+        case '@nfts/modify':
+            return state.map(nft => {
+                if (nft.tokenId == action.payload.tokenId) nft = action.payload
+                return nft
+            })
+
+        case '@nfts/remove':
+            return state.filter(nft => nft.tokenId != action.payload)
 
         case '@nfts/init':
             return action.payload
 
-        case '@nfts/update':
-            action.payload.map(nft => {
-                state.push(nft)
-            })
-            return state
+        case '@nfts/reset':
+            return []
+
         default:
             return state
     }
